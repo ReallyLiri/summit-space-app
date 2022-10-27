@@ -1,0 +1,17 @@
+﻿{
+  "profiles": {
+    "SummIt": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "SERVER_URL": "https://reallyliri.jetbrains.space",
+        "CLIENT_ID": "",
+        "CLIENT_SECRET": "",
+        "CONNECTION_STRING": "host=localhost;port=5432;database=summit;username=summit;password=summit"
+      }
+    }
+  }
+}

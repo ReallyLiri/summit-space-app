@@ -1,0 +1,7 @@
+.idea
+.gitignore
+.dockerignore
+Dockerfile
+bin/
+obj/
+.DS_Store
