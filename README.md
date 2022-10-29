@@ -1,6 +1,14 @@
 # SummIt
 
-TBD
+![logo](https://i.imgur.com/XE27BsP.png)
+
+A JetBrains Space app.
+
+Get quick word-cloud summary of a channel / code repository (and more in the future!)
+
+![gif](https://i.imgur.com/EYWp8fk.gif)
+
+![help](https://i.imgur.com/Ztsyky6.png)
 
 ## Debug locally
 
@@ -30,6 +38,7 @@ heroku login
 heroku container:login
 heroku container:push web -a summit-space-app
 heroku container:release web -a summit-space-app
+eroku logs -a summit-space-app --tail
 ```
 
 ## Run DB locally
