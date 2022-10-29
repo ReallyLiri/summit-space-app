@@ -1,5 +1,6 @@
 using JetBrains.Space.Client;
 using JetBrains.Space.Common;
+using SummIt.Models;
 using SummIt.Services.Space;
 
 namespace SummIt.Services.Summarize;
@@ -24,9 +25,9 @@ public class ContextService : IContextService
         switch (parts.Length)
         {
             case > 2:
-                return (null, null, "Invalid search term (too many parameters) - Usage: <project>/<repository>");
+                return (null, null, $"Invalid search term (too many parameters) - ${Usages.RepositoryUsage}");
             case <= 1:
-                return (null, null, "Invalid search term (too few parameters) - Usage: <project>/<repository>");
+                return (null, null, $"Invalid search term (too few parameters) - ${Usages.RepositoryUsage}");
             case > 1:
             {
                 PRProject project;
@@ -64,6 +65,11 @@ public class ContextService : IContextService
 
     public async Task<(ChannelIdentifier Channel, string Message)> SearchChannelAsync(string clientId, string query)
     {
+        if (string.IsNullOrEmpty(query))
+        {
+            return (null, $"Invalid search term (empty) - ${Usages.ChannelUsage}");
+        }
+
         var chatClient = await _spaceClientProvider.GetChatClientAsync(clientId);
         var channels = (await chatClient.Channels.ListAllChannelsAsync(query, top: DuplicatesLimit)).Data ?? new List<AllChannelsListEntry>();
         return channels.Count switch

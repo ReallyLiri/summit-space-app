@@ -4,18 +4,20 @@ using SummIt.Models.Attributes;
 
 namespace SummIt.Models;
 
+public static class Usages
+{
+    public const string ChannelUsage = "Usage: \"/repo <project>/<repostiroy>\"";
+    public const string RepositoryUsage = "Usage: \"/channel <channel>\"";
+}
+
 public enum SummItCommands
 {
-    [CommandName("help")]
-    [Description("Show this help")]
-    [UsedImplicitly]
+    [CommandName("help")] [Description("Show this help")] [UsedImplicitly]
     Help,
-    
-    [CommandName("repo")]
-    [Description("Get quick summary of a code repository. Usage: \"/repo <project>/<repostiroy>\"")]
+
+    [CommandName("repo")] [Description($"Get quick summary of a code repository. {Usages.ChannelUsage}")]
     Repository,
-    
-    [CommandName("channel")]
-    [Description("Get quick summary of a channel. Usage: \"/channel <channel>\"")]
+
+    [CommandName("channel")] [Description($"Get quick summary of a channel. {Usages.RepositoryUsage}")]
     Channel,
 }
