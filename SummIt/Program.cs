@@ -1,6 +1,7 @@
 using SummIt;
 using SummIt.DB;
 using SummIt.Handlers;
+using SummIt.Services.Summarize;
 
 var app = WebApplication.CreateBuilder(args)
     .RegisterServices()

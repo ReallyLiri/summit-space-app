@@ -23,6 +23,15 @@ BASE_URL="https://<ngrok>"
 https://jetbrains.com/space/app/install-app?name=SummIt&endpoint=$BASE_URL/api/space
 ```
 
+## Deploy
+
+```sh
+heroku login
+heroku container:login
+heroku container:push web -a summit-space-app
+heroku container:release web -a summit-space-app
+```
+
 ## Run DB locally
 
 Deployed app uses Heroku Postgres. To achieve same functionality locally we can use docker:
@@ -41,5 +50,9 @@ docker run --restart unless-stopped -d \
 
 ```sh
 docker build -t summit .
-docker run --rm -it -e PORT=5000 -p 5000:5000 --name summit summit
+docker run --rm -it \
+  -e PORT=5000 \
+  -e CONNECTION_STRING='host=localhost;port=5432;database=summit;username=summit;password=summit' \
+  -p 5000:5000 \
+  --name summit summit
 ```

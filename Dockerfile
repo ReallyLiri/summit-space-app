@@ -7,6 +7,6 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
 WORKDIR /app
-RUN apt-get update && apt install -y git
+RUN apt-get update && apt install -y git libfontconfig1
 COPY --from=build-env /app/out .
 CMD ASPNETCORE_URLS=http://*:$PORT dotnet SummIt.dll
