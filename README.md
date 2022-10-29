@@ -20,7 +20,7 @@ Use `ngrok` to communicate between Space and your server, use the endpoint `http
 
 ### Install manually
 
-Grant `Add custom emoji, View custom emoji` permissions in the **Global Authorization** settings.
+Grant `AView project details, Read Git repositories, View messages, View channel info` permissions in the **Global Authorization** settings.
 
 ### Install from link
 
@@ -38,7 +38,7 @@ heroku login
 heroku container:login
 heroku container:push web -a summit-space-app
 heroku container:release web -a summit-space-app
-eroku logs -a summit-space-app --tail
+heroku logs -a summit-space-app --tail
 ```
 
 ## Run DB locally
