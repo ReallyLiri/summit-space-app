@@ -1,7 +1,10 @@
 using System.Collections.Concurrent;
+using System.Text;
 using System.Web;
 using CliWrap;
+using CliWrap.Exceptions;
 using JetBrains.Space.Client;
+using JetBrains.Space.Common;
 using Microsoft.Extensions.Caching.Memory;
 using SummIt.Extensions;
 using SummIt.Services.Space;
@@ -74,28 +77,46 @@ public class RepositorySummarizingService : IRepositorySummarizingService
         );
         var token = await _cache.GetOrAddAsync(
             (clientId, "token"),
-            async () => await applicationClient.BearerTokenAsync(ApplicationIdentifier.Me),
+            async () => await _spaceClientProvider.GetBearerTokenAsync(clientId),
             TimeSpan.FromMinutes(1)
         );
-        
+
+        if (string.IsNullOrEmpty(token))
+        {
+            _logger.LogError($"Failed to acquire bearer token for client-id '{clientId}'");
+            return null;
+        }
+
         return gitUrl.Replace(
             "https://",
             $"https://{HttpUtility.UrlEncode(application.Name)}:{HttpUtility.UrlEncode(token)}@"
         );
     }
 
-    private static async Task CloneRepositoryAsync(string cloneUrl, string directoryPath)
+    private async Task CloneRepositoryAsync(string cloneUrl, string directoryPath)
     {
-        await Cli.Wrap("git")
-            .WithArguments($"clone --depth 1 {cloneUrl}")
-            .WithWorkingDirectory(directoryPath)
-            .ExecuteAsync();
+        _logger.LogInformation($"Cloning repository '{cloneUrl}'");
+        var stdOutBuffer = new StringBuilder();
+        var stdErrBuffer = new StringBuilder();
+        try
+        {
+            await Cli.Wrap("git")
+                .WithArguments($"clone --depth 1 {cloneUrl}")
+                .WithWorkingDirectory(directoryPath)
+                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                .ExecuteAsync();
+        }
+        catch (CommandExecutionException commandExecutionException)
+        {
+            throw new ApplicationException($"Process failed.\nStdout:\n{stdOutBuffer}\nStderr:\n{stdErrBuffer}", commandExecutionException);
+        }
     }
 
     private async Task<IReadOnlyDictionary<string, int>> ExtractKeywordsFromFileSystemAsync(string directoryPath)
     {
         var histogram = new ConcurrentDictionary<string, int>();
-        foreach (var item in new DirectoryInfo(directoryPath).EnumerateFileSystemInfos())
+        foreach (var item in new DirectoryInfo(directoryPath).EnumerateFileSystemInfos("*", SearchOption.AllDirectories))
         {
             await ExtractKeywordsFromItemAsync(item, histogram);
         }

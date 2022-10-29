@@ -12,7 +12,7 @@ public enum SummItCommands
     Help,
     
     [CommandName("repo")]
-    [Description("Get quick summary of a repository. Usage: \"/repo <[project/]repostiroy>\"")]
+    [Description("Get quick summary of a code repository. Usage: \"/repo <project>/<repostiroy>\"")]
     Repository,
     
     [CommandName("channel")]

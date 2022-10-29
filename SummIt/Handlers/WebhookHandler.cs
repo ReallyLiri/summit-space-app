@@ -27,6 +27,7 @@ public class WebhookHandler : SpaceWebHookHandler
     private readonly ISpaceClientProvider _spaceClientProvider;
 
     private const int MinimalTokensCount = 10;
+    private const int TargetTokensCount = 64;
 
     private static readonly string RepositoryCommandPrefix = SummItCommands.Repository.GetText<CommandNameAttribute>(_ => _.Name);
     private static readonly string ChannelCommandPrefix = SummItCommands.Channel.GetText<CommandNameAttribute>(_ => _.Name);
@@ -189,7 +190,7 @@ public class WebhookHandler : SpaceWebHookHandler
 
         var uploadClient = await _spaceClientProvider.GetUploadClientAsync(payload.ClientId);
         var targetFileName = Path.GetInvalidFileNameChars().Aggregate(query, (str, c) => str.Replace(c, '_'));
-        var attachmentId = await _wordCloudService.CreateWordCloudAsync(histogram, async stream
+        var attachmentId = await _wordCloudService.CreateWordCloudAsync(histogram.Top(TargetTokensCount), async stream
             => await uploadClient.UploadImageAsync(
                 "attachments",
                 $"{targetFileName}.png",

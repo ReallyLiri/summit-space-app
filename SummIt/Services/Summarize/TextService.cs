@@ -4,22 +4,23 @@ namespace SummIt.Services.Summarize;
 
 public class TextService : ITextService
 {
-    private static readonly ISet<char> NoiseCharacters = new HashSet<char>
-    {
-        '(', ')', '{', '}', '[', ']', '-', '_', '+', '=', '\\', '/', '"', '\'',
-        ',', ';', '.', '?', '!', '&', '%', '~', '`'
-    };
-
     public IEnumerable<string> TokenizeName(string name)
-        => string.Join("", name.Humanize().Where(_ => !NoiseCharacters.Contains(_)))
-            .Split(" ")
-            .Where(_ => !string.IsNullOrWhiteSpace(_))
+        => name.Humanize()
+            .Split(null)
             .Where(_ => !_.StartsWith('@') && !_.StartsWith('#'))
+            .Select(FilterOutChars)
+            .Where(_ => _.Length >= 2)
+            .Where(_ => !string.IsNullOrWhiteSpace(_))
             .Select(_ => _.ToLowerInvariant())
             .Where(_ => !CommonWords.Contains(_));
 
     public IEnumerable<string> TokenizeText(string text)
         => text.Split(null).SelectMany(TokenizeName);
+
+    private static string FilterOutChars(string str)
+        => string.Join("", str.Where(IsRelevantChar));
+
+    private static bool IsRelevantChar(char ch) => char.IsLetter(ch);
 
     private static readonly ISet<string> CommonWords = new HashSet<string>
     {

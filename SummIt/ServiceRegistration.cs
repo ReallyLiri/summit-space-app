@@ -16,9 +16,9 @@ public static class ServiceRegistration
 
         builder.Services.AddSingleton<ISpaceClientProvider, SpaceClientProvider>();
 
-        builder.Services.AddSingleton<Func<AppInstallation, Connection>>(
+        builder.Services.AddSingleton<Func<AppInstallation, TokenProvidingClientCredentialsConnection>>(
             serviceProvider =>
-                appInstallation => new ClientCredentialsConnection(
+                appInstallation => new TokenProvidingClientCredentialsConnection(
                     new Uri(appInstallation.ServerUrl),
                     appInstallation.ClientId,
                     appInstallation.ClientSecret,

@@ -8,4 +8,5 @@ public interface ISpaceClientProvider
     Task<ApplicationClient> GetApplicationClientAsync(string clientId);
     Task<ProjectClient> GetProjectClientAsync(string clientId);
     Task<UploadClient> GetUploadClientAsync(string clientId);
+    Task<string> GetBearerTokenAsync(string clientId);
 }

@@ -1,5 +1,4 @@
 using JetBrains.Space.Client;
-using JetBrains.Space.Common;
 using SummIt.DB;
 
 namespace SummIt.Services.Space;
@@ -7,9 +6,9 @@ namespace SummIt.Services.Space;
 public class SpaceClientProvider : ISpaceClientProvider
 {
     private readonly IAppInstallationStore _appInstallationStore;
-    private readonly Func<AppInstallation, Connection> _connectionBuilder;
+    private readonly Func<AppInstallation, TokenProvidingClientCredentialsConnection> _connectionBuilder;
 
-    public SpaceClientProvider(IAppInstallationStore appInstallationStore, Func<AppInstallation, Connection> connectionBuilder)
+    public SpaceClientProvider(IAppInstallationStore appInstallationStore, Func<AppInstallation, TokenProvidingClientCredentialsConnection> connectionBuilder)
     {
         _appInstallationStore = appInstallationStore;
         _connectionBuilder = connectionBuilder;
@@ -23,7 +22,10 @@ public class SpaceClientProvider : ISpaceClientProvider
 
     public async Task<UploadClient> GetUploadClientAsync(string clientId) => new(await GetConnectionAsync(clientId));
 
-    private async Task<Connection> GetConnectionAsync(string clientId)
+    public async Task<string> GetBearerTokenAsync(string clientId)
+        => await (await GetConnectionAsync(clientId)).GetBearerTokenAsync();
+
+    private async Task<TokenProvidingClientCredentialsConnection> GetConnectionAsync(string clientId)
     {
         if (clientId == null)
         {
