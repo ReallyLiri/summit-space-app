@@ -71,15 +71,11 @@ public class RepositorySummarizingService : IRepositorySummarizingService
 
         var applicationClient = await _spaceClientProvider.GetApplicationClientAsync(clientId);
         var application = await _cache.GetOrAddAsync(
-            (clientId, "application"),
+            clientId,
             async () => await applicationClient.GetApplicationAsync(ApplicationIdentifier.Me),
             TimeSpan.FromHours(1)
         );
-        var token = await _cache.GetOrAddAsync(
-            (clientId, "token"),
-            async () => await _spaceClientProvider.GetBearerTokenAsync(clientId),
-            TimeSpan.FromMinutes(1)
-        );
+        var token = await _spaceClientProvider.GetBearerTokenAsync(clientId);
 
         if (string.IsNullOrEmpty(token))
         {

@@ -20,7 +20,7 @@ Use `ngrok` to communicate between Space and your server, use the endpoint `http
 
 ### Install manually
 
-Grant `AView project details, Read Git repositories, View messages, View channel info` permissions in the **Global Authorization** settings.
+Grant `View project details, Read Git repositories, View messages, View channel info` permissions in the **Global Authorization** settings.
 
 ### Install from link
 

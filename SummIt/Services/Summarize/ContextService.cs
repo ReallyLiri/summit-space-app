@@ -1,5 +1,7 @@
 using JetBrains.Space.Client;
 using JetBrains.Space.Common;
+using Microsoft.Extensions.Caching.Memory;
+using SummIt.Extensions;
 using SummIt.Models;
 using SummIt.Services.Space;
 
@@ -10,6 +12,11 @@ public class ContextService : IContextService
     private readonly ISpaceClientProvider _spaceClientProvider;
 
     private const int DuplicatesLimit = 3;
+
+    private readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions
+    {
+        SizeLimit = 1024
+    });
 
     public ContextService(ISpaceClientProvider spaceClientProvider)
     {
@@ -32,11 +39,15 @@ public class ContextService : IContextService
             {
                 PRProject project;
                 var projectQuery = parts[0].ToUpperInvariant().Trim();
-                var projects = (await projectClient.GetAllProjectsAsync(
-                    top: DuplicatesLimit,
-                    term: projectQuery,
-                    partial: _ => _.AddFieldName("data(repos(name,id),name,key,id)")
-                )).Data ?? new List<PRProject>();
+                var projects = await _cache.GetOrAddAsync(
+                    query,
+                    async () => (await projectClient.GetAllProjectsAsync(
+                        top: DuplicatesLimit,
+                        term: projectQuery,
+                        partial: _ => _.AddFieldName("data(repos(name,id),name,key,id)")
+                    )).Data,
+                    TimeSpan.FromMinutes(10)
+                ) ?? new List<PRProject>();
                 switch (projects.Count)
                 {
                     case 0:
